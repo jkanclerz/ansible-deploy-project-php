@@ -1,0 +1,18 @@
+---
+
+- name: Ensure previous vendors exists
+  stat: path={{deploy.project.root}}/releases/{{last_release.stdout}}/vendor
+  register: previous_vendors_exists
+  when: deploy.project.php.copy_last_vendor == true
+
+# - debug: var=previous_vendors_exists
+- name: copy previous vendors
+  when: deploy.project.php.copy_last_vendor == true and
+    previous_vendors_exists.stat.exists == True
+  shell: cp -r {{deploy.project.root}}/releases/{{last_release.stdout}}/vendor {{deploy.project.root}}/releases/{{project_deploy_date.stdout}}/vendor 2>/dev/null
+
+
+- name: Run composer install
+  command: composer install {{deploy.project.php.composer_opts}}
+  args:
+    chdir: "{{deploy.project.root}}/releases/{{project_deploy_date.stdout}}"
