@@ -1,2 +1,3 @@
 ---
 # tasks file for symfony2 deploy
+- include: composer_install.yml
